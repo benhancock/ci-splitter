@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "ci-splitter"
+version = "0.1.0"
+description = "A tool to generate parallel CI workflows"
+authors = ["benhancock <benhancock.dev@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ci_splitter", from = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+pyyaml = ">=6.0.2,<7.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

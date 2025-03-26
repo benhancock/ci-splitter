@@ -1,5 +1,23 @@
-venv/
-.venv/
-env/
-.env/
+__pycache__/
+*.py[cod]
+*$py.class
 
+.venv/
+poetry.lock
+
+.idea/
+.vscode/
+*.swp
+*.swo
+
+.DS_Store
+*.log
+
+venv/
+env/
+.env
+.venv
+
+dist/
+build/
+*.egg-info/
