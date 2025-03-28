@@ -1,3 +1,7 @@
+name: Parallel Tests
+'on':
+  push: null
+  pull_request: null
 jobs:
   test-group-1:
     runs-on: ubuntu-latest
@@ -12,13 +16,16 @@ jobs:
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: venv-{"runner.os"}-{"steps.setup-python.outputs.python-version"}-{"hashFiles("**/poetry.lock")}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != "true"
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       name: Install dependencies
       run: poetry install --no-interaction --no-root
     - name: Install project
@@ -38,13 +45,16 @@ jobs:
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: venv-{"runner.os"}-{"steps.setup-python.outputs.python-version"}-{"hashFiles("**/poetry.lock")}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != "true"
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       name: Install dependencies
       run: poetry install --no-interaction --no-root
     - name: Install project
@@ -64,13 +74,16 @@ jobs:
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: venv-{"runner.os"}-{"steps.setup-python.outputs.python-version"}-{"hashFiles("**/poetry.lock")}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != "true"
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       name: Install dependencies
       run: poetry install --no-interaction --no-root
     - name: Install project
@@ -90,20 +103,19 @@ jobs:
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: venv-{"runner.os"}-{"steps.setup-python.outputs.python-version"}-{"hashFiles("**/poetry.lock")}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != "true"
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       name: Install dependencies
       run: poetry install --no-interaction --no-root
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 4
       run: poetry run pytest tests/test_math_4.py tests/test_math_8.py
-name: Parallel Tests
-'on':
-- push
-- pull_request
