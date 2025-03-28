@@ -1,8 +1,29 @@
 import os
 import yaml
+import toml
+
+def get_python_version_from_pyproject():
+    """
+    Extract Python version requirement from pyproject.toml.
+    Returns a string like '3.13' or falls back to '3.9' if not specified.
+    """
+    try:
+        with open('pyproject.toml', 'r') as f:
+            pyproject_data = toml.load(f)
+        
+        requires = pyproject_data.get('tool', {}).get('poetry', {}).get('dependencies', {}).get('python', '>=3.9')
+        
+        import re
+        match = re.search(r'(\d+\.\d+)', requires)
+        if match:
+            return match.group(1)
+    except Exception:
+        return '3.9'
+    
+    return '3.9'
 
 def generate_github_actions_workflow(test_files, num_jobs=4):
-    test_distribution = distribute_tests(test_files, num_jobs)
+    python_version = get_python_version_from_pyproject()
     
     workflow = {
         'name': 'Parallel Tests',
@@ -19,8 +40,11 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                 
                 {
                     'name': 'Set up Python',
-                    'uses': 'actions/setup-python@v3',
-                    'with': {'python-version': '3.9'}
+                    'uses': 'actions/setup-python@v4',
+                    'with': {
+                        'python-version': python_version,
+                        'allow-prereleases': True
+                    }
                 },
                 
                 {
