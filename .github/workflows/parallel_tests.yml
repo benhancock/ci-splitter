@@ -24,7 +24,7 @@ jobs:
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 1
-      run: poetry run pytest tests/test_math.py
+      run: poetry run pytest tests/test_math_1.py tests/test_math_5.py
   test-group-2:
     runs-on: ubuntu-latest
     steps:
@@ -50,7 +50,7 @@ jobs:
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 2
-      run: 'poetry run pytest '
+      run: poetry run pytest tests/test_math_2.py tests/test_math_6.py
   test-group-3:
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +76,7 @@ jobs:
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 3
-      run: 'poetry run pytest '
+      run: poetry run pytest tests/test_math_3.py tests/test_math_7.py
   test-group-4:
     runs-on: ubuntu-latest
     steps:
@@ -102,7 +102,7 @@ jobs:
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 4
-      run: 'poetry run pytest '
+      run: poetry run pytest tests/test_math_4.py tests/test_math_8.py
 name: Parallel Tests
 'on':
 - push
