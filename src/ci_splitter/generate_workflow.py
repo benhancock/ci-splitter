@@ -24,17 +24,38 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                 },
                 
                 {
+                    'name': 'Install Poetry',
+                    'uses': 'snok/install-poetry@v1',
+                    'with': {
+                        'virtualenvs-create': True,
+                        'virtualenvs-in-project': True
+                    }
+                },
+                
+                {
+                    'name': 'Load cached venv',
+                    'id': 'cached-poetry-dependencies',
+                    'uses': 'actions/cache@v3',
+                    'with': {
+                        'path': '.venv',
+                        'key': '${{ runner.os }}-poetry-${{ hashFiles(\'**/poetry.lock\') }}'
+                    }
+                },
+                
+                {
                     'name': 'Install dependencies',
-                    'run': '''
-                    python -m pip install --upgrade pip
-                    pip install pytest
-                    pip install -r requirements.txt
-                    '''
+                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
+                    'run': 'poetry install --no-interaction --no-root'
+                },
+                
+                {
+                    'name': 'Install project',
+                    'run': 'poetry install --no-interaction'
                 },
                 
                 {
                     'name': f'Run tests for job {job_num + 1}',
-                    'run': f'pytest {" ".join(test_distribution[job_num])}'
+                    'run': f'poetry run pytest {" ".join(test_distribution[job_num])}'
                 }
             ]
         }
