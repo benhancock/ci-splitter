@@ -38,13 +38,14 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                     'uses': 'actions/cache@v3',
                     'with': {
                         'path': '.venv',
-                        'key': f'venv-{{"runner.os"}}-{{"steps.setup-python.outputs.python-version"}}-{{"hashFiles("**/poetry.lock")}}'
+                        'key': f'venv-${{{{ runner.os }}}}-${{{{ steps.setup-python.outputs.python-version }}}}-${{{{ hashFiles("**/poetry.lock") }}}}',
+                        'restore-keys': f'venv-${{{{ runner.os }}}}-${{{{ steps.setup-python.outputs.python-version }}}}-'
                     }
                 },
                 
                 {
+                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'name': 'Install dependencies',
-                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != "true"',
                     'run': 'poetry install --no-interaction --no-root'
                 },
                 
@@ -76,7 +77,7 @@ def write_workflow_file(workflow):
     
     workflow_path = '.github/workflows/parallel_tests.yml'
     with open(workflow_path, 'w') as f:
-        yaml.dump(workflow, f, default_flow_style=False)
+        yaml.safe_dump(workflow, f, default_flow_style=False, sort_keys=False)
     
     print(f'Workflow file generated: {workflow_path}')
 
