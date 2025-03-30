@@ -1,8 +1,25 @@
 import os
 import yaml
+import toml
+
+def get_python_version_from_pyproject():
+    try:
+        with open('pyproject.toml', 'r') as f:
+            pyproject_data = toml.load(f)
+        
+        requires = pyproject_data.get('tool', {}).get('poetry', {}).get('dependencies', {}).get('python', '>=3.9')
+        
+        import re
+        match = re.search(r'(\d+\.\d+)', requires)
+        if match:
+            return match.group(1)
+    except Exception:
+        return '3.9'
+    
+    return '3.9'
 
 def generate_github_actions_workflow(test_files, num_jobs=4):
-    test_distribution = distribute_tests(test_files, num_jobs)
+    python_version = get_python_version_from_pyproject()
     
     workflow = {
         'name': 'Parallel Tests',
@@ -22,8 +39,30 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                 
                 {
                     'name': 'Set up Python',
-                    'uses': 'actions/setup-python@v3',
-                    'with': {'python-version': '3.9'}
+                    'uses': 'actions/setup-python@v4',
+                    'with': {
+                        'python-version': python_version,
+                        'allow-prereleases': True
+                    }
+                },
+                
+                {
+                    'name': 'Install Poetry',
+                    'uses': 'snok/install-poetry@v1',
+                    'with': {
+                        'virtualenvs-create': True,
+                        'virtualenvs-in-project': True
+                    }
+                },
+                
+                {
+                    'name': 'Load cached venv',
+                    'id': 'cached-poetry-dependencies',
+                    'uses': 'actions/cache@v3',
+                    'with': {
+                        'path': '.venv',
+                        'key': '${{ runner.os }}-poetry-${{ hashFiles(\'**/poetry.lock\') }}'
+                    }
                 },
                 
                 {
@@ -49,6 +88,7 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                 {
                     'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'name': 'Install dependencies',
+                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'run': 'poetry install --no-interaction --no-root'
                 },
                 
