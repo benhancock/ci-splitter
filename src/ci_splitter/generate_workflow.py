@@ -21,6 +21,8 @@ def get_python_version_from_pyproject():
 def generate_github_actions_workflow(test_files, num_jobs=4):
     python_version = get_python_version_from_pyproject()
     
+    test_distribution = distribute_tests(test_files, num_jobs)
+    
     workflow = {
         'name': 'Parallel Tests',
         'on': {
@@ -61,32 +63,12 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                     'uses': 'actions/cache@v3',
                     'with': {
                         'path': '.venv',
-                        'key': '${{ runner.os }}-poetry-${{ hashFiles(\'**/poetry.lock\') }}'
-                    }
-                },
-                
-                {
-                    'name': 'Install Poetry',
-                    'uses': 'snok/install-poetry@v1',
-                    'with': {
-                        'virtualenvs-create': True,
-                        'virtualenvs-in-project': True
-                    }
-                },
-                
-                {
-                    'name': 'Load cached venv',
-                    'id': 'cached-poetry-dependencies',
-                    'uses': 'actions/cache@v3',
-                    'with': {
-                        'path': '.venv',
                         'key': 'venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles("**/poetry.lock") }}',
                         'restore-keys': 'venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-'
                     }
                 },
                 
                 {
-                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'name': 'Install dependencies',
                     'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'run': 'poetry install --no-interaction --no-root'
