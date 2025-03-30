@@ -1,3 +1,7 @@
+name: Parallel Tests
+'on':
+  push: null
+  pull_request: null
 jobs:
   test-group-1:
     runs-on: ubuntu-latest

@@ -3,10 +3,6 @@ import yaml
 import toml
 
 def get_python_version_from_pyproject():
-    """
-    Extract Python version requirement from pyproject.toml.
-    Returns a string like '3.13' or falls back to '3.9' if not specified.
-    """
     try:
         with open('pyproject.toml', 'r') as f:
             pyproject_data = toml.load(f)
@@ -27,7 +23,10 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
     
     workflow = {
         'name': 'Parallel Tests',
-        'on': ['push', 'pull_request'],
+        'on': {
+            'push': None,
+            'pull_request': None
+        },
         'jobs': {}
     }
     
@@ -67,6 +66,27 @@ def generate_github_actions_workflow(test_files, num_jobs=4):
                 },
                 
                 {
+                    'name': 'Install Poetry',
+                    'uses': 'snok/install-poetry@v1',
+                    'with': {
+                        'virtualenvs-create': True,
+                        'virtualenvs-in-project': True
+                    }
+                },
+                
+                {
+                    'name': 'Load cached venv',
+                    'id': 'cached-poetry-dependencies',
+                    'uses': 'actions/cache@v3',
+                    'with': {
+                        'path': '.venv',
+                        'key': 'venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles("**/poetry.lock") }}',
+                        'restore-keys': 'venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-'
+                    }
+                },
+                
+                {
+                    'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'name': 'Install dependencies',
                     'if': 'steps.cached-poetry-dependencies.outputs.cache-hit != \'true\'',
                     'run': 'poetry install --no-interaction --no-root'
@@ -100,7 +120,7 @@ def write_workflow_file(workflow):
     
     workflow_path = '.github/workflows/parallel_tests.yml'
     with open(workflow_path, 'w') as f:
-        yaml.dump(workflow, f, default_flow_style=False)
+        yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
     
     print(f'Workflow file generated: {workflow_path}')
 
