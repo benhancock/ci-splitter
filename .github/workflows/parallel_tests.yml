@@ -1,25 +1,34 @@
+name: Parallel Tests
+'on':
+  push: null
+  pull_request: null
 jobs:
   test-group-1:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        allow-prereleases: true
+      id: setup-python
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      name: Install dependencies
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     - name: Install project
       run: poetry install --no-interaction
@@ -30,22 +39,27 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        allow-prereleases: true
+      id: setup-python
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      name: Install dependencies
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     - name: Install project
       run: poetry install --no-interaction
@@ -56,22 +70,27 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        allow-prereleases: true
+      id: setup-python
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      name: Install dependencies
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     - name: Install project
       run: poetry install --no-interaction
@@ -82,28 +101,29 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        allow-prereleases: true
+      id: setup-python
     - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: true
         virtualenvs-in-project: true
-    - id: cached-poetry-dependencies
-      name: Load cached venv
+    - name: Load cached venv
+      id: cached-poetry-dependencies
       uses: actions/cache@v3
       with:
-        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         path: .venv
-    - if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      name: Install dependencies
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
+          hashFiles("**/poetry.lock") }}
+        restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
+          }}-
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --no-root
     - name: Install project
       run: poetry install --no-interaction
     - name: Run tests for job 4
       run: poetry run pytest tests/test_math_4.py tests/test_math_8.py
-name: Parallel Tests
-'on':
-- push
-- pull_request
