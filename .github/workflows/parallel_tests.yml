@@ -1,7 +1,7 @@
 name: Parallel Tests
 'on':
-  push: null
-  pull_request: null
+  push: {}
+  pull_request: {}
 jobs:
   test-group-1:
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
-          hashFiles("**/poetry.lock") }}
+          hashFiles('**/poetry.lock') }}
         restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
           }}-
     - name: Install dependencies
@@ -55,7 +55,7 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
-          hashFiles("**/poetry.lock") }}
+          hashFiles('**/poetry.lock') }}
         restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
           }}-
     - name: Install dependencies
@@ -86,7 +86,7 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
-          hashFiles("**/poetry.lock") }}
+          hashFiles('**/poetry.lock') }}
         restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
           }}-
     - name: Install dependencies
@@ -117,7 +117,7 @@ jobs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{
-          hashFiles("**/poetry.lock") }}
+          hashFiles('**/poetry.lock') }}
         restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version
           }}-
     - name: Install dependencies
